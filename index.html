@@ -126,6 +126,51 @@
   }
 
   .eyebrow{ letter-spacing:.14em; }
+
+  /* --- Scroll progress bar --- */
+  #scrollProgress{ position:fixed; top:0; left:0; height:3px; background:#A8572E; width:0%; z-index:60; }
+
+  /* --- Subtle grain overlay for a tactile, premium feel --- */
+  .noise-overlay{
+    position:fixed; inset:0; pointer-events:none; z-index:2; opacity:.035; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* --- Custom cursor (desktop, hover-capable only) --- */
+  @media (hover:hover) and (pointer:fine){
+    body, a, button, input, textarea, select, summary{ cursor:none; }
+  }
+  #cursorDot, #cursorRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:70; border-radius:999px; }
+  #cursorDot{ width:6px; height:6px; background:#A8572E; transform:translate(-50%,-50%); }
+  #cursorRing{ width:34px; height:34px; border:1.5px solid rgba(168,87,46,.55); transform:translate(-50%,-50%); transition: width .25s ease, height .25s ease, border-color .25s ease, opacity .25s ease; }
+  #cursorRing.big{ width:58px; height:58px; border-color:rgba(168,87,46,.9); }
+  @media (hover:none), (pointer:coarse){ #cursorDot, #cursorRing, #scrollProgress ~ .noise-overlay{ display:none; } }
+
+  /* --- Hero headline line reveal --- */
+  .hline{ display:block; overflow:hidden; }
+  .hline span{ display:block; transform:translateY(112%); animation: hline-in .9s cubic-bezier(.22,.8,.22,1) forwards; }
+  @keyframes hline-in{ to{ transform:translateY(0); } }
+
+  /* --- Hero video / mobile Ken Burns fallback --- */
+  @keyframes kenburns{ 0%{ transform:scale(1) translate(0,0);} 100%{ transform:scale(1.14) translate(-1.5%,-1.5%);} }
+  .hero-kenburns{ animation: kenburns 20s ease-in-out infinite alternate; }
+
+  /* --- Floating material swatch chips --- */
+  @keyframes swatch-float{ 0%,100%{ transform: translateY(0) rotate(var(--rot,0deg)); } 50%{ transform: translateY(-14px) rotate(var(--rot,0deg)); } }
+  .swatch-chip{ animation: swatch-float 5.5s ease-in-out infinite; box-shadow:0 14px 30px rgba(34,30,27,.2); }
+
+  /* --- Magnetic buttons + tilt cards (JS-driven) --- */
+  .magnetic{ transition: transform .3s cubic-bezier(.2,.8,.2,1); will-change:transform; }
+  .tilt-card{ transition: transform .25s ease; will-change:transform; }
+
+  /* --- Mobile menu slide --- */
+  #mobileMenu{ max-height:0; opacity:0; overflow:hidden; padding-bottom:0; transition:max-height .4s cubic-bezier(.22,.8,.22,1), opacity .3s ease; }
+  #mobileMenu.mm-open{ max-height:420px; opacity:1; padding-bottom:1.5rem; }
+
+  @media (prefers-reduced-motion: reduce){
+    .hline span{ animation:none !important; transform:none !important; }
+    .hero-kenburns, .swatch-chip{ animation:none !important; }
+  }
 </style>
 
 <script type="application/ld+json">
@@ -199,6 +244,11 @@
 <!-- ============ SKIP LINK ============ -->
 <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] bg-charcoal text-cream px-4 py-2 rounded">Skip to content</a>
 
+<div id="scrollProgress"></div>
+<div class="noise-overlay" aria-hidden="true"></div>
+<div id="cursorRing" aria-hidden="true"></div>
+<div id="cursorDot" aria-hidden="true"></div>
+
 <!-- ============ NAVIGATION ============ -->
 <header id="site-nav" class="fixed top-0 inset-x-0 z-50 bg-ivory/90 backdrop-blur-md">
   <div class="max-w-7xl mx-auto px-5 md:px-8 flex items-center justify-between py-5" id="nav-inner">
@@ -226,7 +276,7 @@
     </button>
   </div>
 
-  <div id="mobileMenu" class="md:hidden hidden flex-col gap-1 px-5 pb-6 bg-ivory border-t border-charcoal/10">
+  <div id="mobileMenu" class="md:hidden flex flex-col gap-1 px-5 bg-ivory border-t border-charcoal/10">
     <a href="#services" class="py-3 border-b border-charcoal/10">Services</a>
     <a href="#work" class="py-3 border-b border-charcoal/10">Our Work</a>
     <a href="#about" class="py-3 border-b border-charcoal/10">About</a>
@@ -246,21 +296,34 @@
     <div class="md:col-span-6 reveal">
       <p class="font-mono eyebrow uppercase text-xs text-bronze mb-5">Al Bada, Dubai &nbsp;·&nbsp; Established 1981</p>
       <h1 class="font-display text-[2.6rem] leading-[1.05] md:text-6xl md:leading-[1.04] text-charcoal">
-        Furniture worth<br>keeping, crafted<br><span class="italic text-bronze">beautifully again.</span>
+        <span class="hline"><span style="animation-delay:.05s">Furniture worth</span></span>
+        <span class="hline"><span style="animation-delay:.18s">keeping, crafted</span></span>
+        <span class="hline"><span class="italic text-bronze" style="animation-delay:.31s">beautifully again.</span></span>
       </h1>
       <p class="text-soft text-base md:text-lg max-w-md">Furniture, vehicle and boat upholstery crafted with care in Dubai since 1981.</p>
       <div class="flex flex-wrap gap-4 mt-9">
-        <a href="#quote" class="bg-bronze text-cream px-7 py-3.5 rounded-full text-sm font-medium hover:bg-bronzedeep transition-colors">Get a Free Quote</a>
-        <a target="_blank" rel="noopener" href="https://wa.me/971507095313" class="flex items-center gap-2 border border-charcoal/20 px-7 py-3.5 rounded-full text-sm font-medium hover:border-bronze hover:text-bronze transition-colors">
+        <a href="#quote" class="magnetic bg-bronze text-cream px-7 py-3.5 rounded-full text-sm font-medium hover:bg-bronzedeep transition-colors">Get a Free Quote</a>
+        <a target="_blank" rel="noopener" href="https://wa.me/971507095313" class="magnetic flex items-center gap-2 border border-charcoal/20 px-7 py-3.5 rounded-full text-sm font-medium hover:border-bronze hover:text-bronze transition-colors">
           Chat on WhatsApp
         </a>
       </div>
     </div>
 
-    <div class="md:col-span-6 reveal">
-      <div class="img-zoom rounded-2xl overflow-hidden aspect-[4/5] md:aspect-[5/6] shadow-xl">
-        <img src="https://images.unsplash.com/photo-1550254478-ead40cc54513?auto=format&fit=crop&w=1200&q=80" alt="Premium leather sofa reupholstered with tailored stitching" class="w-full h-full object-cover" loading="eager">
+    <div class="md:col-span-6 reveal relative">
+      <div id="heroMediaWrap" class="img-zoom rounded-2xl overflow-hidden aspect-[4/5] md:aspect-[5/6] shadow-xl relative">
+        <!-- Desktop: ambient looped craftsmanship video. Mobile: static image with a slow Ken Burns pan to keep things light on data. -->
+        <video id="heroVideo" class="hidden md:block w-full h-full object-cover" autoplay muted loop playsinline
+          poster="https://images.pexels.com/videos/4456103/craft-cut-eather-handcrafted-4456103.jpeg?auto=compress&cs=tinysrgb&h=1400&fit=crop&w=1200">
+          <source src="https://videos.pexels.com/video-files/4456103/4456103-hd_1920_1080_25fps.mp4" type="video/mp4">
+        </video>
+        <img src="https://images.pexels.com/videos/4456103/craft-cut-eather-handcrafted-4456103.jpeg?auto=compress&cs=tinysrgb&h=1400&fit=crop&w=1200" alt="Craftsman hand-stitching leather upholstery" class="md:hidden hero-kenburns w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-charcoal/40 via-transparent to-transparent pointer-events-none"></div>
+        <span class="absolute bottom-4 left-4 font-mono text-[10px] uppercase tracking-wider bg-charcoal/60 text-cream px-3 py-1.5 rounded-full backdrop-blur-sm">Hand-stitched craftsmanship</span>
       </div>
+
+      <div class="hidden sm:block swatch-chip absolute -left-6 top-10 w-16 h-16 rounded-xl bg-bronze border-4 border-ivory" style="--rot:-8deg; animation-delay:.2s;" aria-hidden="true"></div>
+      <div class="hidden sm:block swatch-chip absolute -right-5 bottom-24 w-14 h-14 rounded-xl bg-charcoal border-4 border-ivory" style="--rot:6deg; animation-delay:1.1s;" aria-hidden="true"></div>
+      <div class="hidden sm:block swatch-chip absolute right-10 -top-5 w-11 h-11 rounded-full bg-paper border-4 border-ivory" style="--rot:0deg; animation-delay:.6s;" aria-hidden="true"></div>
     </div>
   </div>
 </section>
@@ -272,6 +335,19 @@
     <span class="text-charcoal">4.6★ Google Rating</span>
     <span>40+ Google Reviews</span>
     <span>Dubai Based</span>
+  </div>
+</section>
+
+<!-- ============ MATERIALS STRIP ============ -->
+<section class="py-10 px-5 md:px-8">
+  <div class="max-w-7xl mx-auto flex flex-wrap items-center gap-x-10 gap-y-5 reveal-stagger">
+    <span class="font-mono eyebrow uppercase text-xs text-soft">Materials we work with</span>
+    <span class="flex items-center gap-2.5 text-sm text-charcoal"><i class="w-3 h-3 rounded-full inline-block bg-bronze"></i>Leather</span>
+    <span class="flex items-center gap-2.5 text-sm text-charcoal"><i class="w-3 h-3 rounded-full inline-block bg-charcoal"></i>Velvet</span>
+    <span class="flex items-center gap-2.5 text-sm text-charcoal"><i class="w-3 h-3 rounded-full inline-block bg-[#C9A876]"></i>Linen</span>
+    <span class="flex items-center gap-2.5 text-sm text-charcoal"><i class="w-3 h-3 rounded-full inline-block bg-[#8C6A52]"></i>Suede</span>
+    <span class="flex items-center gap-2.5 text-sm text-charcoal"><i class="w-3 h-3 rounded-full inline-block bg-[#D8CBB8]"></i>Boucle</span>
+    <span class="flex items-center gap-2.5 text-sm text-charcoal"><i class="w-3 h-3 rounded-full inline-block bg-[#4A5340]"></i>Outdoor / Marine Fabric</span>
   </div>
 </section>
 
@@ -301,7 +377,7 @@
     { t:"Boat Upholstery", d:"Marine-grade seating upholstery and restoration.", i:"M8 40h48l-6 12H14z M32 8v24 M20 24l12-16 12 16" }
   ];
   document.getElementById('servicesGrid').innerHTML = SERVICES.map(s => `
-    <div class="stitch-card bg-white rounded-xl p-7 border border-charcoal/10">
+    <div class="stitch-card tilt-card bg-white rounded-xl p-7 border border-charcoal/10">
       <svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="#A8572E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mb-5"><path d="${s.i}"/></svg>
       <h3 class="font-display text-lg mb-2">${s.t}</h3>
       <p class="text-soft text-sm leading-relaxed">${s.d}</p>
@@ -319,7 +395,7 @@
       <a href="#quote" class="inline-block mt-8 border border-charcoal/20 px-7 py-3.5 rounded-full text-sm font-medium hover:border-bronze hover:text-bronze transition-colors">Request a Quote</a>
     </div>
     <div class="md:col-span-6 order-1 md:order-2 reveal">
-      <div class="img-zoom rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
+      <div class="img-zoom tilt-card rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
         <img src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80" alt="Living room sofa with fresh upholstery" class="w-full h-full object-cover" loading="lazy">
       </div>
     </div>
@@ -372,7 +448,7 @@
 <section class="py-24 md:py-32 px-5 md:px-8 bg-espresso text-cream">
   <div class="max-w-7xl mx-auto grid md:grid-cols-12 gap-10 items-center">
     <div class="md:col-span-6 reveal">
-      <div class="img-zoom rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
+      <div class="img-zoom tilt-card rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
         <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80" alt="Car interior with leather seat upholstery" class="w-full h-full object-cover" loading="lazy">
       </div>
     </div>
@@ -399,7 +475,7 @@
       <a href="#quote" class="inline-block mt-8 border border-charcoal/20 px-7 py-3.5 rounded-full text-sm font-medium hover:border-bronze hover:text-bronze transition-colors">Request a Quote</a>
     </div>
     <div class="md:col-span-6 order-1 md:order-2 reveal">
-      <div class="img-zoom rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
+      <div class="img-zoom tilt-card rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
         <img src="https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?auto=format&fit=crop&w=1200&q=80" alt="Boat with upholstered seating" class="w-full h-full object-cover" loading="lazy">
       </div>
     </div>
@@ -430,7 +506,7 @@
     ["https://images.unsplash.com/photo-1567016432779-094069958ea5?auto=format&fit=crop&w=800&q=80","Armchair upholstery",""]
   ];
   document.getElementById('galleryGrid').innerHTML = GALLERY.map(([src,alt,span]) => `
-    <div class="img-zoom rounded-lg overflow-hidden ${span} ${span ? 'aspect-auto h-full min-h-[220px]' : 'aspect-square'}">
+    <div class="img-zoom tilt-card rounded-lg overflow-hidden ${span} ${span ? 'aspect-auto h-full min-h-[220px]' : 'aspect-square'}">
       <img src="${src}" alt="${alt}" class="w-full h-full object-cover" loading="lazy">
     </div>
   `).join('');
@@ -631,7 +707,7 @@
         <input id="q-photo" name="photo" type="file" accept="image/*" class="w-full text-sm border border-dashed border-charcoal/20 rounded-lg px-4 py-3 bg-ivory">
       </div>
       <div class="sm:col-span-2 flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-2">
-        <button type="submit" class="bg-bronze text-cream px-8 py-3.5 rounded-full text-sm font-medium hover:bg-bronzedeep transition-colors">Request a Free Quote</button>
+        <button type="submit" class="magnetic bg-bronze text-cream px-8 py-3.5 rounded-full text-sm font-medium hover:bg-bronzedeep transition-colors">Request a Free Quote</button>
         <p id="formStatus" class="text-sm text-soft" aria-live="polite"></p>
       </div>
     </form>
@@ -699,7 +775,7 @@
 </footer>
 
 <!-- ============ WHATSAPP FLOATING WIDGET ============ -->
-<div class="fixed bottom-6 right-5 md:bottom-8 md:right-8 z-50 flex flex-col items-end gap-2">
+<div class="fixed right-5 md:right-8 z-50 flex flex-col items-end gap-2" style="bottom: calc(1.5rem + env(safe-area-inset-bottom));">
   <div id="waTip" class="wa-tip opacity-0 translate-y-2 pointer-events-none bg-charcoal text-cream text-xs md:text-sm px-4 py-2.5 rounded-xl shadow-lg max-w-[190px]">
     Need a quote? Chat with us
   </div>
@@ -734,12 +810,12 @@
   const menuBtn = document.getElementById('menuBtn');
   const mobileMenu = document.getElementById('mobileMenu');
   menuBtn.addEventListener('click', () => {
-    const open = mobileMenu.classList.toggle('flex');
-    mobileMenu.classList.toggle('hidden');
+    const open = mobileMenu.classList.toggle('mm-open');
     menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
   mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    mobileMenu.classList.add('hidden'); mobileMenu.classList.remove('flex');
+    mobileMenu.classList.remove('mm-open');
+    menuBtn.setAttribute('aria-expanded', 'false');
   }));
 
   // Scroll reveal
@@ -747,6 +823,81 @@
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.15 });
   document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => io.observe(el));
+</script>
+
+<!-- ============ SCROLL PROGRESS / PARALLAX / CURSOR / MICRO-INTERACTIONS ============ -->
+<script>
+(function(){
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  // Scroll progress bar
+  const bar = document.getElementById('scrollProgress');
+  function updateProgress(){
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive:true });
+  updateProgress();
+
+  // Pause hero video for reduced-motion users; still shows the poster frame
+  const heroVideo = document.getElementById('heroVideo');
+  if (heroVideo && reduced) { heroVideo.pause(); heroVideo.removeAttribute('autoplay'); }
+
+  // Gentle hero parallax on scroll
+  const heroWrap = document.getElementById('heroMediaWrap');
+  if (heroWrap && !reduced) {
+    window.addEventListener('scroll', () => {
+      const y = Math.min(window.scrollY, 600);
+      heroWrap.style.transform = `translateY(${y * 0.06}px)`;
+    }, { passive:true });
+  }
+
+  // Custom cursor + magnetic buttons + card tilt — desktop, fine-pointer, motion-ok only
+  if (!fine || reduced) {
+    document.getElementById('cursorDot')?.remove();
+    document.getElementById('cursorRing')?.remove();
+    return;
+  }
+
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2, rx = mx, ry = my;
+  window.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+  });
+  (function loop(){
+    rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a, button, .tilt-card, input, textarea, select, summary').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('big'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('big'));
+  });
+
+  document.querySelectorAll('.magnetic').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width / 2;
+      const y = e.clientY - r.top - r.height / 2;
+      btn.style.transform = `translate(${x * 0.22}px, ${y * 0.32}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0,0)'; });
+  });
+
+  document.querySelectorAll('.tilt-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `perspective(700px) rotateX(${py * -6}deg) rotateY(${px * 6}deg) translateY(-2px)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(700px) rotateX(0) rotateY(0)'; });
+  });
+})();
 </script>
 
 </body>
